@@ -9,10 +9,6 @@ class FormPage extends StatefulWidget {
 }
 
 Future<Map<String, String>> fetchProjectDetails(String query) async {
-  //const apiKey = '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'; // Replace with your actual OpenAI API key
-  //const apiKey = 'sk-9856cb0b078047c383d8fe09399aafc3';
-  //const url = "https://gyatword.zrok.jensenhshoots.com/api/chat/completions";
-  //const url = 'https://api.openai.com/v1/chat/completions';
 
   final apiKey = dotenv.env['API_KEY'];
   final baseUrl = dotenv.env['BASE_URL'];
