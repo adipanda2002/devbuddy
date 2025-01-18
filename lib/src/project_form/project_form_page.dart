@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FormPage extends StatefulWidget {
   const FormPage({super.key});
@@ -149,6 +150,32 @@ class _FormPageState extends State<FormPage>{
       tags.remove(tag);
     });
   }
+
+  Future<void> insertProject({
+    required String description,
+    required String techStack,
+    required List<String> tags,
+  }) async {
+    try {
+      final supabase = Supabase.instance.client;
+
+      final response = await supabase.from('projects').insert({
+        'description': description,
+        'tech_stack': techStack,
+        'development_tags': tags,
+        'hiring_manager_id': null,
+      });
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Project successfully added!')),
+      );
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Error: ${e.toString()}')),
+      );
+    }
+  }
+
 
   Widget _buildTagsSection() {
     String tagInput = '';
@@ -359,10 +386,20 @@ class _FormPageState extends State<FormPage>{
                     const SizedBox(height: 24),
                     Center(
                       child: ElevatedButton(
-                        onPressed: () {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(content: Text('Form Submitted')),
+                        onPressed: () async {
+                          setState(() {
+                            isLoading = true;
+                          });
+
+                          await insertProject(
+                            description: descriptionController.text,
+                            techStack: techStackController.text,
+                            tags: tags,
                           );
+
+                          setState(() {
+                            isLoading = false;
+                          });
                         },
                         style: ElevatedButton.styleFrom(
                           backgroundColor: Colors.deepPurpleAccent,
@@ -371,12 +408,11 @@ class _FormPageState extends State<FormPage>{
                             borderRadius: BorderRadius.circular(32),
                           ),
                         ),
-                        child: const Text(
-                          'Submit',
-                          style: TextStyle(color: Colors.white, fontWeight: FontWeight.bold),
+                        child: isLoading
+                            ? const CircularProgressIndicator(color: Colors.white)
+                            : const Text('Submit'),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),
