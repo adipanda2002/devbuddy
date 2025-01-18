@@ -1,15 +1,15 @@
 import 'package:devbuddy/mongodb.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 import 'src/app.dart';
 import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
   print('API Key: ${dotenv.env['API_KEY']}');
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
