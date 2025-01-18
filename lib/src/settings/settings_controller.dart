@@ -8,7 +8,12 @@ import 'settings_service.dart';
 /// Controllers glue Data Services to Flutter Widgets. The SettingsController
 /// uses the SettingsService to store and retrieve user settings.
 class SettingsController with ChangeNotifier {
-  SettingsController(this._settingsService);
+
+  SettingsController(this._settingsService) {
+    _themeMode = ThemeMode.system; // Default value
+  }
+
+  //SettingsController(this._settingsService);
 
   // Make SettingsService a private variable so it is not used directly.
   final SettingsService _settingsService;
@@ -16,6 +21,11 @@ class SettingsController with ChangeNotifier {
   // Make ThemeMode a private variable so it is not updated directly without
   // also persisting the changes with the SettingsService.
   late ThemeMode _themeMode;
+
+  // Add a flag to indicate whether settings are loaded
+  bool _isInitialized = false;
+  bool get isInitialized => _isInitialized;
+
 
   // Allow Widgets to read the user's preferred ThemeMode.
   ThemeMode get themeMode => _themeMode;
@@ -25,7 +35,7 @@ class SettingsController with ChangeNotifier {
   /// settings from the service.
   Future<void> loadSettings() async {
     _themeMode = await _settingsService.themeMode();
-
+    _isInitialized = true; // Mark as initialized
     // Important! Inform listeners a change has occurred.
     notifyListeners();
   }
