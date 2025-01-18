@@ -1,4 +1,3 @@
-import 'package:devbuddy/src/tinder_card/tinder_card.dart';
 import 'package:flutter/material.dart';
 
 class MyAccountPage extends StatelessWidget {
