@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 
 import 'package:devbuddy/src/tinder_card/tinder_page.dart';
+import 'package:devbuddy/src/project_form/project_form_page.dart';
+import 'package:devbuddy/src/my_account/my_account_page.dart';
 
 void main() => runApp(const App());
 
@@ -53,7 +55,32 @@ class LoginPageView extends StatelessWidget {
             OutlinedButton(onPressed: () {}, child: const Text("Login")),
             OutlinedButton(onPressed: (){
               Navigator.pop(context);
-              Navigator.push(context, MaterialPageRoute(builder: (context) => TinderPageView()));
+              Navigator.push(context, MaterialPageRoute(builder: (context) => DefaultTabController(
+                length: 3,
+                child: Scaffold(
+                  appBar: AppBar(
+                    title:
+                    Text("DevBuddy"), //AppLocalizations.of(context)!.appTitle),
+                    bottom: TabBar(
+                      tabs: [
+                        Tab(icon: Icon(Icons.home), text: 'Home'),
+                        Tab(icon: Icon(Icons.edit), text: 'Form'),
+                        Tab(icon: Icon(Icons.account_circle), text: 'Account'),
+                      ],
+                    ),
+                  ),
+                  body: TabBarView(
+                    children: [
+                      TinderPageView(),
+                      FormPage(),
+                      MyAccountPage(),
+
+                    ],
+                  ),
+                ),
+
+
+              )));
               }, child: const Text("SKIP LOGIN")),
           ]
         ),
@@ -61,3 +88,10 @@ class LoginPageView extends StatelessWidget {
     );
   }
 }
+
+
+
+//
+// home: DefaultTabController(
+
+// ),
