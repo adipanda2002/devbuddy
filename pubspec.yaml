@@ -22,9 +22,13 @@ dependencies:
   cupertino_icons: ^1.0.2
   liquid_swipe: ^3.0.0
   smooth_page_indicator: ^1.0.0+2
+  sqflite: ^2.4.1
+
   flutter_dotenv: ^5.0.2
   supabase_flutter: ^2.8.3
-  
+  google_sign_in: ^6.2.2
+
+
 dev_dependencies:
   flutter_test:
     sdk: flutter

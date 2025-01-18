@@ -1,10 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:google_sign_in/google_sign_in.dart';
+import 'package:devbuddy/main.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:devbuddy/src/tinder_card/tinder_page.dart';
 import 'package:devbuddy/src/project_form/project_form_page.dart';
 import 'package:devbuddy/src/my_account/my_account_page.dart';
+import 'package:devbuddy/src/login_page/google_login.dart';
 
 void main() => runApp(const App());
+
+
 
 class App extends StatelessWidget {
   const App({super.key});
@@ -18,6 +24,7 @@ class App extends StatelessWidget {
 
   }
 }
+
 
 
 class LoginPageView extends StatelessWidget {
@@ -53,6 +60,8 @@ class LoginPageView extends StatelessWidget {
             ),
             // ElevatedButton(onPressed: () {}, child: const Text("elevated Button")),
             OutlinedButton(onPressed: () {}, child: const Text("Login")),
+
+
             OutlinedButton(onPressed: (){
               Navigator.pop(context);
               Navigator.push(context, MaterialPageRoute(builder: (context) => DefaultTabController(
@@ -74,14 +83,16 @@ class LoginPageView extends StatelessWidget {
                       TinderPageView(),
                       FormPage(),
                       MyAccountPage(),
-
                     ],
                   ),
                 ),
-
-
               )));
               }, child: const Text("SKIP LOGIN")),
+
+            OutlinedButton(onPressed: (){
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (container) => GoogleLoginScreen()));
+            }, child: const Text("GOOGLE LOGIN")),
           ]
         ),
       ),
