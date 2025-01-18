@@ -2,8 +2,6 @@ import 'package:flutter/material.dart';
 
 import 'package:devbuddy/src/tinder_card/tinder_page.dart';
 import 'package:devbuddy/src/project_form/project_form_page.dart';
-import 'package:devbuddy/src/my_account/my_account_page.dart';
-import 'package:devbuddy/src/login_page/google_login.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -119,7 +117,6 @@ class _LoginPageViewState extends State<LoginPageView> {
                   children: [
                     TinderPageView(userId: userId),
                     const FormPage(),
-                    const MyAccountPage(),
                   ],
                 ),
               ),

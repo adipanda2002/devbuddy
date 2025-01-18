@@ -5,8 +5,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-
-import 'my_account/my_account_page.dart';
 import 'settings/settings_controller.dart';
 
 /// The Widget that configures your application.
@@ -75,7 +73,6 @@ class MyApp extends StatelessWidget {
                     userId: Supabase.instance.client.auth.currentUser?.id ?? '',
                   ),
                   const FormPage(),
-                  const MyAccountPage(),
                 ],
               ),
             ),
@@ -109,7 +106,6 @@ class MyApp extends StatelessWidget {
                               userId: Supabase.instance.client.auth.currentUser?.id ?? '',
                             ),
                             const FormPage(),
-                            const MyAccountPage(),
                           ],
                         ),
                       ),

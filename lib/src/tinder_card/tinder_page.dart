@@ -38,27 +38,22 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
 
   Future<void> _fetchProjects() async {
   try {
-    // Fetch data from the 'projects' table
     final response = await supabase
-        .from('projects') // Specify the table name
-        .select('description, tech_stack, development_tags, company, website, industry') // Specify the columns
-        .order('created_at', ascending: false) // Sort by creation time
-        .limit(10); // Optional: Limit the number of rows fetched
+        .from('projects')
+        .select('id, description, tech_stack, development_tags, company, website, industry')
+        .order('created_at', ascending: false)
+        .limit(10);
 
-    // Debug the response
-    print('Supabase response: $response');
-    print(widget.userId);
-
-    // Check if the response contains data
     if (response != null && response is List<dynamic>) {
       setState(() {
         stack = response.map((item) {
           return {
+            "id": item["id"], // Include project ID
             "description": item["description"] ?? "No description",
             "tech_stack": item["tech_stack"] ?? "No tech stack",
             "development_tags": item["development_tags"] != null
                 ? List<String>.from(item["development_tags"])
-                : [""], // Use an empty list if tags are null
+                : [""],
             "company": item["company"] ?? "No company",
             "website": item["website"] ?? "No website",
             "industry": item["industry"] ?? "No industry",
@@ -81,27 +76,33 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
 }
 
 
-  void _swipeCard(bool isRightSwipe) {
-    if (stack.isEmpty) return;
-    
-    final endOffset = Offset(isRightSwipe ? 1.5 : -1.5, 0.0);
-    setState(() {
-      _animation = Tween<Offset>(
-        begin: Offset.zero,
-        end: endOffset,
-      ).animate(CurvedAnimation(
-        parent: _animationController,
-        curve: Curves.easeOut,
-      ));
-    });
 
-    _animationController.forward(from: 0.0).then((_){
-      setState(() {
-        stack.removeLast();
-      });
-      _animationController.reset();
+ void _swipeCard(bool isRightSwipe) {
+  if (stack.isEmpty) return;
+
+  final projectId = stack.last['id']; // Assuming `id` is the project UUID
+  final swiperId = widget.userId;
+
+  final endOffset = Offset(isRightSwipe ? 1.5 : -1.5, 0.0);
+  setState(() {
+    _animation = Tween<Offset>(
+      begin: Offset.zero,
+      end: endOffset,
+    ).animate(CurvedAnimation(
+      parent: _animationController,
+      curve: Curves.easeOut,
+    ));
+  });
+
+  _animationController.forward(from: 0.0).then((_) {
+    _registerSwipe(swiperId, projectId, isRightSwipe); // Register swipe
+    setState(() {
+      stack.removeLast();
     });
-  }
+    _animationController.reset();
+  });
+}
+
 
   @override
   void dispose() {
@@ -185,4 +186,17 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
       ),
     );
   }
+
+  Future<void> _registerSwipe(String swiperId, String projectId, bool isRightSwipe) async {
+  if (!isRightSwipe) return; // Only register right swipes
+  try {
+    final response = await supabase.from('swipes').insert({
+      'swiper_id': swiperId,
+      'project_id': projectId,
+    });
+  } catch (error) {
+    print("Error registering swipe: $error");
+  }
+}
+
 }
