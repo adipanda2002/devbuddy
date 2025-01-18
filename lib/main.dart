@@ -5,6 +5,8 @@ import 'src/app.dart';
 import 'src/settings/settings_controller.dart';
 import 'src/settings/settings_service.dart';
 
+import 'package:supabase_flutter/supabase_flutter.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -12,6 +14,13 @@ void main() async {
   print('API Key: ${dotenv.env['API_KEY']}');
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
+
+  await Supabase.initialize(
+    url: dotenv.env['SUPABASE_URL'] ?? '',
+    anonKey: dotenv.env['SUPABASE_ANON_KEY'] ?? '',
+    debug: true,
+  );
+
   WidgetsFlutterBinding.ensureInitialized();
   final settingsService = SettingsService();
   final settingsController = SettingsController(settingsService);
