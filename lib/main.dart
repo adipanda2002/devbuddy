@@ -7,9 +7,10 @@ import 'src/settings/settings_service.dart';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  
+
   await dotenv.load(fileName: ".env");
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
@@ -33,4 +34,6 @@ void main() async {
   // SettingsView.
   runApp(MyApp(settingsController: settingsController));
 }
+
+final supabase = Supabase.instance.client;
 
