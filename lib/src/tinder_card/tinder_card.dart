@@ -1,7 +1,17 @@
 import 'package:flutter/material.dart';
 
 class TinderCard extends StatelessWidget{
-  const TinderCard({super.key});
+  const TinderCard({
+    super.key,
+    this.name = "NULL",
+    this.company = "COMPANY",
+    this.projects = "PROJECTS",
+  });
+
+  //final Image image;
+  final String name;
+  final String company;
+  final String projects;
 
 
   @override
@@ -25,12 +35,12 @@ class TinderCard extends StatelessWidget{
                 spacing: 20.0,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Jane Doe", textAlign:TextAlign.left, style: const TextStyle(
+                    Text(name, textAlign:TextAlign.left, style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 40.0
                     )),
-                    Text("Yuzhang INC", style: TextStyle(fontSize: 24.0),),
-                    Text("Projects: project 1, project 2")
+                    Text(company, style: TextStyle(fontSize: 24.0),),
+                    Text(projects)
                   ]
               ),
             )
