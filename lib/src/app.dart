@@ -62,29 +62,8 @@ class MyApp extends StatelessWidget {
           theme: ThemeData.dark(),
           darkTheme: ThemeData.dark(),
 
-          home: DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              appBar: AppBar(
-                title:
-                    Text("DevBuddy"), //AppLocalizations.of(context)!.appTitle),
-                bottom: TabBar(
-                  tabs: [
-                    Tab(icon: Icon(Icons.home), text: 'Home'),
-                    Tab(icon: Icon(Icons.edit), text: 'Form'),
-                    Tab(icon: Icon(Icons.account_circle), text: 'Account'),
-                  ],
-                ),
-              ),
-              body: TabBarView(
-                children: [
-                  TinderPageView(),
-                  FormPage(),
-                  MyAccountPage(),
-                ],
-              ),
-            ),
-          ),
+          home: LoginPageView(),
+
 
           onGenerateRoute: (RouteSettings routeSettings) {
             return MaterialPageRoute<void>(
