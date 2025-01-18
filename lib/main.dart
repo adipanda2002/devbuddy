@@ -35,3 +35,5 @@ void main() async {
   runApp(MyApp(settingsController: settingsController));
 }
 
+final supabase = Supabase.instance.client;
+
