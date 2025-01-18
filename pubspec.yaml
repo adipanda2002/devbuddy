@@ -25,6 +25,8 @@ dependencies:
   flutter_native_splash: ^2.4.4
   sqflite: ^2.4.1
 
+  flutter_dotenv: ^5.0.2
+
 
 dev_dependencies:
   flutter_test:
@@ -53,3 +55,4 @@ flutter:
   assets:
     # Add assets from the images directory to the application.
     - assets/images/
+    - assets/.env
