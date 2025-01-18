@@ -10,7 +10,6 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await dotenv.load(fileName: ".env");
-  print('API Key: ${dotenv.env['API_KEY']}');
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
   WidgetsFlutterBinding.ensureInitialized();
