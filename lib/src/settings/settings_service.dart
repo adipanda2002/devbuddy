@@ -13,5 +13,6 @@ class SettingsService {
   Future<void> updateThemeMode(ThemeMode theme) async {
     // Use the shared_preferences package to persist settings locally or the
     // http package to persist settings over the network.
+    print('ThemeMode updated to: $themeMode');
   }
 }
