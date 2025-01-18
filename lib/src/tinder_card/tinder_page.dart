@@ -1,6 +1,6 @@
-
 import 'package:devbuddy/src/tinder_card/tinder_card.dart';
 import 'package:flutter/material.dart';
+import '/src/services/userQueries.dart';
 
 
 class TinderPageView extends StatefulWidget {
@@ -13,7 +13,7 @@ class TinderPageView extends StatefulWidget {
 class _TinderPageViewState extends State<TinderPageView> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _animation;
-  late List<Map<String, dynamic>> stack;
+  late Future<List<Map<String, dynamic>>> stack;
 
   @override
   void initState() {
@@ -47,7 +47,9 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
 
     _animationController.forward(from: 0.0).then((_){
       setState(() {
-        stack.removeLast();
+        stack.then((stack) {
+          stack.removeLast();
+        });
       });
       _animationController.reset();
     });
@@ -61,31 +63,45 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
-    print(stack);
     return Scaffold(
-      body: Container(
-        child: Stack(
-          clipBehavior: Clip.none,
-          children: stack.reversed.map((map) {
-            int index = stack.indexOf(map);
-            TinderCard card = TinderCard(
-              key: ValueKey(map),
-              name: map["name"],
-              company: map["company"],
-              projects: map["projects"],
-            );
-
-            if (index == stack.length - 1) {
-              return SlideTransition(
-                position: _animation,
-                child: card,
-              );
-            }
-
-            return card;
+      body: FutureBuilder(
+        future: stack,
+        builder: (context, snapshot) {
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(child: CircularProgressIndicator());
+          } else if (snapshot.hasError) {
+            return Center(child: Text("Error: ${snapshot.error}"));
+          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
+            return Center(child: Text("No data available"));
           }
-          ).toList().reversed.toList()
-        )
+          final stack = snapshot.data!;
+          return Container(
+              child: Stack(
+                  clipBehavior: Clip.none,
+                  children: stack.reversed.map((map) {
+                    int index = stack.indexOf(map);
+                    TinderCard card = TinderCard(
+                      key: ValueKey(map),
+                      name: map["name"] ?? "Unknown name",
+                      company: map["company"],
+                      industry: map["industry"],
+                      projects: map["projects"] ?? "Unknown projects",
+                    );
+
+                    if (index == stack.length - 1) {
+                      return SlideTransition(
+                        position: _animation,
+                        child: card,
+                      );
+                    }
+
+                    return card;
+                  }
+                  ).toList().reversed.toList()
+              )
+          );
+
+        },
       ),
       floatingActionButton: Padding(
         padding: EdgeInsets.fromLTRB(50.0, 0.0, 15.0, 40.0),
@@ -119,38 +135,36 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
     );
   }
 
-  List<Map<String,dynamic>> getCardStack() {
-    List<Map<String, dynamic>> stack = [];
+  Future<List<Map<String,dynamic>>> getCardStack() async {
     
-    Map<String, dynamic> janedoe = {
-      "name": "Jane Doe",
-      "company": "YUZHANG INC",
-      "projects": "MY PROJECT",
-    };
-
-    Map<String, dynamic> janicemanice = {
-      "name": "Janice Manice",
-      "company": "YASH INDUSTRIES",
-      "projects": "MY PROJECT",
-    };
-
-    Map<String, dynamic> bobbobby = {
-      "name": "Bob Bobby",
-      "company": "Bob Bus",
-      "projects": "Bobs PROJECTs",
-    };
-
-    Map<String, dynamic> adipanda = {
-      "name": "adipanda",
-      "company": "Adi Tech",
-      "projects": "ADIS PROJECTs",
-    };
-
-    stack.add(janedoe);
-    stack.add(janicemanice);
-    stack.add(bobbobby);
-    stack.add(adipanda);
-
-    return stack;
+    // Map<String, dynamic> janedoe = {
+    //   "name": "Jane Doe",
+    //   "company": "YUZHANG INC",
+    //   "projects": "MY PROJECT",
+    // };
+    //
+    // Map<String, dynamic> janicemanice = {
+    //   "name": "Janice Manice",
+    //   "company": "YASH INDUSTRIES",
+    //   "projects": "MY PROJECT",
+    // };
+    //
+    // Map<String, dynamic> bobbobby = {
+    //   "name": "Bob Bobby",
+    //   "company": "Bob Bus",
+    //   "projects": "Bobs PROJECTs",
+    // };
+    //
+    // Map<String, dynamic> adipanda = {
+    //   "name": "adipanda",
+    //   "company": "Adi Tech",
+    //   "projects": "ADIS PROJECTs",
+    // };
+    //
+    // stack.add(janedoe);
+    // stack.add(janicemanice);
+    // stack.add(bobbobby);
+    // stack.add(adipanda);
+    return await getHiringManagers();
   }
 }
