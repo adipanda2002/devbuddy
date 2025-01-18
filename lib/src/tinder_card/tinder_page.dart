@@ -1,17 +1,19 @@
-import 'dart:developer';
 
-import 'package:flutter/cupertino.dart';
+import 'package:devbuddy/src/tinder_card/tinder_card.dart';
 import 'package:flutter/material.dart';
 
-import 'tinder_card.dart';
 
 
 class TinderPageView extends StatelessWidget {
+  const TinderPageView({super.key});
+
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: TinderCard(),
+      body: Container(
+        child: TinderCard()
+      ),
       floatingActionButton: Padding(
         padding: EdgeInsets.fromLTRB(50.0, 0.0, 15.0, 40.0),
         child: SizedBox(
