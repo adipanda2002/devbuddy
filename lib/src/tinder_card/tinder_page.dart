@@ -3,7 +3,10 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:devbuddy/src/tinder_card/tinder_card.dart';
 
 class TinderPageView extends StatefulWidget {
-  const TinderPageView({super.key});
+
+  final String userId;
+
+  const TinderPageView({Key? key, required this.userId}) : super(key: key);
 
   @override
   State<TinderPageView> createState() => _TinderPageViewState();
@@ -44,6 +47,7 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
 
     // Debug the response
     print('Supabase response: $response');
+    print(widget.userId);
 
     // Check if the response contains data
     if (response != null && response is List<dynamic>) {

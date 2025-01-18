@@ -41,7 +41,7 @@ class _GoogleLoginScreenState extends State<GoogleLoginScreen> {
                   ),
                   body: TabBarView(
                     children: [
-                      TinderPageView(),
+                      TinderPageView(userId: '',),
                       FormPage(),
                       MyAccountPage(),
                     ],

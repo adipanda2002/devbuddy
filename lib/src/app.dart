@@ -1,12 +1,13 @@
 import 'package:devbuddy/src/login_page/loginview.dart';
+import 'package:devbuddy/src/project_form/project_form_page.dart';
+import 'package:devbuddy/src/tinder_card/tinder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
+import 'my_account/my_account_page.dart';
 import 'settings/settings_controller.dart';
-import 'settings/settings_view.dart';
-import 'sample_feature/sample_item_details_view.dart';
-import 'sample_feature/sample_item_list_view.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -19,15 +20,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Glue the SettingsController to the MaterialApp.
-    //
-    // The ListenableBuilder Widget listens to the SettingsController for changes.
-    // Whenever the user updates their settings, the MaterialApp is rebuilt.
     return ListenableBuilder(
       listenable: settingsController,
       builder: (BuildContext context, Widget? child) {
         if (!settingsController.isInitialized) {
-          // Show loading screen until settings are initialized
           return const MaterialApp(
             home: Scaffold(
               body: Center(
@@ -36,6 +32,7 @@ class MyApp extends StatelessWidget {
             ),
           );
         }
+
         return MaterialApp(
           restorationScopeId: 'app',
           themeMode: settingsController.themeMode,
@@ -52,26 +49,73 @@ class MyApp extends StatelessWidget {
           ],
 
           onGenerateTitle: (BuildContext context) =>
-              AppLocalizations.of(context)!.appTitle,
+          AppLocalizations.of(context)!.appTitle,
 
           theme: ThemeData.dark(),
           darkTheme: ThemeData.dark(),
 
-          home: LoginPageView(),
-
+          // Set the initial route dynamically based on session.
+          home: Supabase.instance.client.auth.currentSession != null
+              ? DefaultTabController(
+            length: 3,
+            child: Scaffold(
+              appBar: AppBar(
+                title: const Text("DevBuddy"),
+                bottom: const TabBar(
+                  tabs: [
+                    Tab(icon: Icon(Icons.home), text: 'Home'),
+                    Tab(icon: Icon(Icons.edit), text: 'Form'),
+                    Tab(icon: Icon(Icons.account_circle), text: 'Account'),
+                  ],
+                ),
+              ),
+              body: TabBarView(
+                children: [
+                  TinderPageView(
+                    userId: Supabase.instance.client.auth.currentUser?.id ?? '',
+                  ),
+                  const FormPage(),
+                  const MyAccountPage(),
+                ],
+              ),
+            ),
+          )
+              : const LoginPageView(),
 
           onGenerateRoute: (RouteSettings routeSettings) {
             return MaterialPageRoute<void>(
               settings: routeSettings,
               builder: (BuildContext context) {
                 switch (routeSettings.name) {
-                  case SettingsView.routeName:
-                    return SettingsView(controller: settingsController);
-                  case SampleItemDetailsView.routeName:
-                    return LoginPageView();
-                  case SampleItemListView.routeName:
+                  case 'login':
+                    return const LoginPageView();
+                  case 'main':
+                    return DefaultTabController(
+                      length: 3,
+                      child: Scaffold(
+                        appBar: AppBar(
+                          title: const Text("DevBuddy"),
+                          bottom: const TabBar(
+                            tabs: [
+                              Tab(icon: Icon(Icons.home), text: 'Home'),
+                              Tab(icon: Icon(Icons.edit), text: 'Form'),
+                              Tab(icon: Icon(Icons.account_circle), text: 'Account'),
+                            ],
+                          ),
+                        ),
+                        body: TabBarView(
+                          children: [
+                            TinderPageView(
+                              userId: Supabase.instance.client.auth.currentUser?.id ?? '',
+                            ),
+                            const FormPage(),
+                            const MyAccountPage(),
+                          ],
+                        ),
+                      ),
+                    );
                   default:
-                    return LoginPageView();
+                    return const LoginPageView();
                 }
               },
             );

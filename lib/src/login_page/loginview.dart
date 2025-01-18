@@ -5,6 +5,8 @@ import 'package:devbuddy/src/project_form/project_form_page.dart';
 import 'package:devbuddy/src/my_account/my_account_page.dart';
 import 'package:devbuddy/src/login_page/google_login.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,7 +32,7 @@ class App extends StatelessWidget {
 
 
 
-class LoginPageView extends StatelessWidget {
+class LoginPageView extends StatefulWidget {
   const LoginPageView({super.key});
   @override
   _LoginPageViewState createState() => _LoginPageViewState();
@@ -60,21 +62,41 @@ class _LoginPageViewState extends State<LoginPageView> {
     });
 
     try {
+      // Check if the user exists
       final response = await supabase
           .from('users')
-          .select('id, username')
+          .select('id, username, password')
           .eq('username', username)
-          .eq('password', password)
           .maybeSingle();
 
+      print(response?.entries);
       if (response == null) {
+        // User does not exist, create a new user
+        final newUser = await supabase.from('users').insert({
+          'username': username,
+          'password': password,
+        }).select('id').single();
+        await saveUserSession(newUser['id']);
+
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid username or password.')),
+          const SnackBar(content: Text('New user created successfully!')),
         );
+      } else if (response['password'] != password) {
+        // Password mismatch
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Invalid password.')),
+        );
+        return;
       } else {
+        await saveUserSession(response['id']);
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('Login successful!')),
         );
+      }
+
+      final userId = response?['id'];
+      print('User ID: $userId');
+
 
         // Navigate to the main app
         Navigator.pushReplacement(
@@ -93,18 +115,17 @@ class _LoginPageViewState extends State<LoginPageView> {
                     ],
                   ),
                 ),
-                body: const TabBarView(
+                body: TabBarView(
                   children: [
-                    TinderPageView(),
-                    FormPage(),
-                    MyAccountPage(),
+                    TinderPageView(userId: userId),
+                    const FormPage(),
+                    const MyAccountPage(),
                   ],
                 ),
               ),
             ),
           ),
         );
-      }
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -114,6 +135,11 @@ class _LoginPageViewState extends State<LoginPageView> {
         isLoading = false;
       });
     }
+  }
+
+  Future<void> saveUserSession(String userId) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString('user_id', userId);
   }
 
   @override
@@ -154,38 +180,6 @@ class _LoginPageViewState extends State<LoginPageView> {
               child: isLoading
                   ? const CircularProgressIndicator()
                   : const Text("Login"),
-            ),
-            OutlinedButton(
-              onPressed: () {
-                Navigator.pushReplacement(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => DefaultTabController(
-                      length: 3,
-                      child: Scaffold(
-                        appBar: AppBar(
-                          title: const Text("DevBuddy"),
-                          bottom: const TabBar(
-                            tabs: [
-                              Tab(icon: Icon(Icons.home), text: 'Home'),
-                              Tab(icon: Icon(Icons.edit), text: 'Form'),
-                              Tab(icon: Icon(Icons.account_circle), text: 'Account'),
-                            ],
-                          ),
-                        ),
-                        body: const TabBarView(
-                          children: [
-                            TinderPageView(),
-                            FormPage(),
-                            MyAccountPage(),
-                          ],
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-              child: const Text("SKIP LOGIN"),
             ),
           ],
         ),
