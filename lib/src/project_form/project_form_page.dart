@@ -6,6 +6,8 @@ class FormPage extends StatelessWidget {
   final TextEditingController techStackController = TextEditingController();
   final TextEditingController tagsController = TextEditingController();
 
+  FormPage({super.key});
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(

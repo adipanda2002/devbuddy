@@ -1,4 +1,3 @@
-import 'package:devbuddy/mongodb.dart';
 import 'package:flutter/material.dart';
 
 import 'src/app.dart';
