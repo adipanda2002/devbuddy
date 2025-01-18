@@ -1,7 +1,6 @@
-import 'package:devbuddy/src/tinder_card/tinder_card.dart';
 import 'package:flutter/material.dart';
-import '/src/services/userQueries.dart';
-
+import 'package:supabase_flutter/supabase_flutter.dart';
+import 'package:devbuddy/src/tinder_card/tinder_card.dart';
 
 class TinderPageView extends StatefulWidget {
   const TinderPageView({super.key});
@@ -13,12 +12,13 @@ class TinderPageView extends StatefulWidget {
 class _TinderPageViewState extends State<TinderPageView> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _animation;
-  late Future<List<Map<String, dynamic>>> stack;
+  List<Map<String, dynamic>> stack = [];
+  bool isLoading = true;
+  final supabase = Supabase.instance.client;
 
   @override
   void initState() {
     super.initState();
-    stack = getCardStack();
     _animationController = AnimationController(
       vsync: this,
       duration: Duration(milliseconds: 400)
@@ -27,14 +27,59 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
       begin: Offset.zero,
       end: Offset.zero
     ).animate(CurvedAnimation(
-      parent: _animationController,
+      parent: _animationController, 
       curve: Curves.easeOut)
     );
+    _fetchProjects();
   }
 
+  Future<void> _fetchProjects() async {
+  try {
+    // Fetch data from the 'projects' table
+    final response = await supabase
+        .from('projects') // Specify the table name
+        .select('description, tech_stack, development_tags, company, website, industry') // Specify the columns
+        .order('created_at', ascending: false) // Sort by creation time
+        .limit(10); // Optional: Limit the number of rows fetched
+
+    // Debug the response
+    print('Supabase response: $response');
+
+    // Check if the response contains data
+    if (response != null && response is List<dynamic>) {
+      setState(() {
+        stack = response.map((item) {
+          return {
+            "description": item["description"] ?? "No description",
+            "tech_stack": item["tech_stack"] ?? "No tech stack",
+            "development_tags": item["development_tags"] != null
+                ? List<String>.from(item["development_tags"])
+                : [""], // Use an empty list if tags are null
+            "company": item["company"] ?? "No company",
+            "website": item["website"] ?? "No website",
+            "industry": item["industry"] ?? "No industry",
+          };
+        }).toList();
+        isLoading = false;
+      });
+    } else {
+      print("Response is null or empty.");
+      setState(() {
+        isLoading = false;
+      });
+    }
+  } catch (error) {
+    print('Error fetching projects: $error');
+    setState(() {
+      isLoading = false;
+    });
+  }
+}
+
+
   void _swipeCard(bool isRightSwipe) {
-    // If right swipe, card ends up 1.5 to the right
-    // If left swipe, card ends up 1.5 to the left
+    if (stack.isEmpty) return;
+    
     final endOffset = Offset(isRightSwipe ? 1.5 : -1.5, 0.0);
     setState(() {
       _animation = Tween<Offset>(
@@ -48,9 +93,7 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
 
     _animationController.forward(from: 0.0).then((_){
       setState(() {
-        stack.then((stack) {
-          stack.removeLast();
-        });
+        stack.removeLast();
       });
       _animationController.reset();
     });
@@ -64,43 +107,49 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(
+        body: Center(
+          child: CircularProgressIndicator(),
+        ),
+      );
+    }
+
+    if (stack.isEmpty) {
+      return const Scaffold(
+        body: Center(
+          child: Text('No more projects available'),
+        ),
+      );
+    }
+
     return Scaffold(
-      body: FutureBuilder(
-        future: stack,
-        builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting) {
-            return Center(child: CircularProgressIndicator());
-          } else if (snapshot.hasError) {
-            return Center(child: Text("Error: ${snapshot.error}"));
-          } else if (!snapshot.hasData || snapshot.data!.isEmpty) {
-            return Center(child: Text("No data available"));
-          }
-          final stack = snapshot.data!;
-          return Container(
-              child: Stack(
-                  clipBehavior: Clip.none,
-                  children: stack.reversed.map((map) {
-                    int index = stack.indexOf(map);
-                    TinderCard card = TinderCard(
-                      key: ValueKey(map),
-                      name: map["name"] ?? "Unknown name",
-                      company: map["company"],
-                      industry: map["industry"],
-                      projects: map["projects"] ?? "Unknown projects",
-                    );
+      body: Container(
+        child: Stack(
+          clipBehavior: Clip.none,
+          children: stack.reversed.map((project) {
+            int index = stack.indexOf(project);
+            TinderCard card = TinderCard(
+              key: ValueKey(project),
+              description: project["description"] ?? 'No description',
+              tech_stack: project["tech_stack"] ?? 'No tech stack',
+              development_tags: project["development_tags"] ?? 'No tags',
+              company: project["company"] ?? "No company",
+              website: project["website"] ?? "No website",
+              industry: project["industry"] ?? "No industry",
+            );
 
-                    if (index == stack.length - 1) {
-                      return SlideTransition(
-                        position: _animation,
-                        child: card,
-                      );
-                    }
+            if (index == stack.length - 1) {
+              return SlideTransition(
+                position: _animation,
+                child: card,
+              );
+            }
 
-                return card;
-              }).toList().reversed.toList(),
-            )
-          );
-        }),
+            return card;
+          }).toList().reversed.toList(),
+        ),
+      ),
       floatingActionButton: Padding(
         padding: EdgeInsets.fromLTRB(50.0, 0.0, 15.0, 40.0),
         child: SizedBox(
@@ -131,38 +180,5 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
         ),
       ),
     );
-  }
-
-  Future<List<Map<String,dynamic>>> getCardStack() async {
-
-    // Map<String, dynamic> janedoe = {
-    //   "name": "Jane Doe",
-    //   "company": "YUZHANG INC",
-    //   "projects": "MY PROJECT",
-    // };
-    //
-    // Map<String, dynamic> janicemanice = {
-    //   "name": "Janice Manice",
-    //   "company": "YASH INDUSTRIES",
-    //   "projects": "MY PROJECT",
-    // };
-    //
-    // Map<String, dynamic> bobbobby = {
-    //   "name": "Bob Bobby",
-    //   "company": "Bob Bus",
-    //   "projects": "Bobs PROJECTs",
-    // };
-    //
-    // Map<String, dynamic> adipanda = {
-    //   "name": "adipanda",
-    //   "company": "Adi Tech",
-    //   "projects": "ADIS PROJECTs",
-    // };
-    //
-    // stack.add(janedoe);
-    // stack.add(janicemanice);
-    // stack.add(bobbobby);
-    // stack.add(adipanda);
-    return await getHiringManagers();
   }
 }
