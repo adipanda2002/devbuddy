@@ -27,8 +27,8 @@ class LoginPageView extends StatelessWidget {
         padding: const EdgeInsets.all(20.0),
         child: ListView(
           children: [
-            // const Text("heading"),
             const Image(image: AssetImage("assets/images/db.png"), height: 180,),
+            const Text("Find your match"),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: TextFormField(
