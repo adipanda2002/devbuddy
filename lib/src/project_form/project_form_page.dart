@@ -15,6 +15,17 @@ Future<Map<String, String>> fetchProjectDetails(String query) async {
   final apiKey = dotenv.env['API_KEY'];
   final baseUrl = dotenv.env['BASE_URL'];
 
+  final List<String> fallbackTags = [
+    'Web Development',
+    'IOS Development',
+    'Data Analytics',
+    'Mobile App Development',
+    'E-commerce Platform',
+    'Cloud Computing',
+    'AI Development',
+    'Machine Learning'
+  ];
+
   final response = await http.post(
     Uri.parse(baseUrl!),
     headers: {
@@ -26,7 +37,24 @@ Future<Map<String, String>> fetchProjectDetails(String query) async {
       'messages': [
         {
           'role': 'system',
-          'content': 'You are an assistant that generates project listings based on business requirements and problem statements for university student developers.'
+          'content': '''
+You are an assistant that generates project listings for university developers. Always follow this strict response format:
+
+**Project Title:** [Title of the project]
+
+**Description:** [A detailed description of the project]
+
+**Tech Stack:** 
+- [Backend: Specify technologies]
+- [Frontend: Specify technologies]
+- [Database: Specify technologies]
+- [APIs/Integration: Specify APIs or services]
+
+**Tags:** [Comma-separated tags selected ONLY from the following list: 
+Web Development, IOS Development, Data Analytics, Mobile App Development, E-commerce Platform, Cloud Computing, AI Development, Machine Learning]
+
+Your response must strictly adhere to this format. Do not add extra sections like "Additional Features" or "Evaluation Criteria."
+'''
         },
         {
           'role': 'user',
@@ -43,20 +71,38 @@ Future<Map<String, String>> fetchProjectDetails(String query) async {
     final jsonResponse = json.decode(response.body);
     final completion = jsonResponse['choices'][0]['message']['content'];
 
-    print(completion);
+    final description = _extractBasicSection(
+        completion,
+        r'\*\*Description:\*\*([\s\S]*?)(?=\n\*\*|\n$)'
+    );
 
-    final description = _extractBasicSection(completion, r'\*\*Description:\*\*\n([\s\S]*?)(?=\n\*\*|\n$)');
-    final techStack = _extractBasicSection(completion, r'\*\*Tech Stack:\*\*\n([\s\S]*?)(?=\n\*\*|\n$)');
-    final tags = _extractBasicSection(completion, r'\*\*Tags:\*\*\n([\s\S]*?)(?=\n\*\*|\n$)');
+    final techStack = _extractBasicSection(
+        completion,
+        r'\*\*Tech Stack:\*\*([\s\S]*?)(?=\n\*\*|\n$)'
+    );
+
+    final tags = _extractBasicSection(
+      completion,
+      r'\*\*Tags:\*\*([\s\S]*?)(?=\n\*\*|$)', // Matches until the next section or end of string
+    );
+
+    // Filter GPT output tags with fallback tags
+    final tagsArray = tags
+        ?.split(',')
+        .map((tag) => tag.trim())
+        .where((tag) => fallbackTags.contains(tag))
+        .toList() ??
+        [];
+
     // Debugging extracted sections
     print('Extracted Description: $description');
     print('Extracted Tech Stack: $techStack');
-    print('Extracted Tags: $tags');
+    print('Extracted Tags: $tagsArray');
 
     return {
       'description': description ?? 'No description found.',
       'techStack': techStack ?? 'No tech stack found.',
-      'tags': tags ?? 'No tags found.',
+      'tags':  tagsArray.join(', '),
     };
   } else {
     print(response.body);
@@ -76,9 +122,89 @@ class _FormPageState extends State<FormPage>{
   final TextEditingController searchController = TextEditingController();
   final TextEditingController descriptionController = TextEditingController();
   final TextEditingController techStackController = TextEditingController();
-  final TextEditingController tagsController = TextEditingController();
 
+  List<String> tags = []; // Store tags dynamically
+  final List<String> fallbackTags = [
+    'Web Development',
+    'IOS Development',
+    'Machine Learning',
+    'Data Analytics',
+    'Mobile App Development',
+    'E-commerce Platform',
+    'Cloud Computing',
+    'AI Development'
+  ];
   bool isLoading = false;
+
+  void addTag(String tag) {
+    if (tag.isNotEmpty && !tags.contains(tag) && fallbackTags.contains(tag)) {
+      setState(() {
+        tags.add(tag);
+      });
+    }
+  }
+
+  void removeTag(String tag) {
+    setState(() {
+      tags.remove(tag);
+    });
+  }
+
+  Widget _buildTagsSection() {
+    String tagInput = '';
+    return Material(
+      elevation: 2,
+      shadowColor: Colors.deepPurpleAccent.withOpacity(0.2),
+      borderRadius: BorderRadius.circular(16),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16), // Rounded box styling
+          border: Border.all(color: Colors.deepPurpleAccent), // Border color matches other fields
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            TextField(
+              onChanged: (value) {
+                tagInput = value.trim();
+              },
+              onSubmitted: (value) {
+                addTag(value.trim());
+              },
+              style: const TextStyle(color: Colors.black),
+              decoration: InputDecoration(
+                labelText: 'Development Tags',
+                hintText: 'E.g., Web Development, iOS',
+                labelStyle: const TextStyle(color: Colors.grey),
+                border: InputBorder.none, // Removes additional underline
+                suffixIcon: IconButton(
+                  icon: const Icon(Icons.add, color: Colors.deepPurple),
+                  onPressed: () {
+                    addTag(tagInput);
+                  },
+                ),
+              ),
+            ),
+            const SizedBox(height: 8),
+            Wrap(
+              spacing: 8.0,
+              runSpacing: 4.0,
+              children: tags.map((tag) {
+                return Chip(
+                  label: Text(tag),
+                  onDeleted: () {
+                    removeTag(tag);
+                  },
+                );
+              }).toList(),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 
 
 
@@ -151,7 +277,11 @@ class _FormPageState extends State<FormPage>{
                           setState(() {
                             descriptionController.text = details['description']!;
                             techStackController.text = details['techStack']!;
-                            tagsController.text = details['tags']!;
+                            tags = details['tags']!
+                                .split(',')
+                                .map((tag) => tag.trim())
+                                .where((tag) => fallbackTags.contains(tag))
+                                .toList();
                             isLoading = false;
                           });
 
@@ -225,11 +355,7 @@ class _FormPageState extends State<FormPage>{
                       hint: 'E.g., Flutter, Node.js, AWS',
                     ),
                     const SizedBox(height: 16),
-                    _buildFloatingTextField(
-                      controller: tagsController,
-                      label: 'Development Tags',
-                      hint: 'E.g., Web Development, iOS, Machine Learning',
-                    ),
+                    _buildTagsSection(),
                     const SizedBox(height: 24),
                     Center(
                       child: ElevatedButton(
@@ -271,25 +397,28 @@ class _FormPageState extends State<FormPage>{
       elevation: 2,
       shadowColor: Colors.deepPurpleAccent.withOpacity(0.2),
       borderRadius: BorderRadius.circular(16),
-      child: TextField(
-        controller: controller,
-        maxLines: maxLines,
-        style: const TextStyle(color: Colors.black),
-        decoration: InputDecoration(
-          filled: true,
-          fillColor: Colors.white,
-          labelText: label,
-          labelStyle: const TextStyle(color: Colors.grey),
-          floatingLabelBehavior: FloatingLabelBehavior.auto,
-          hintText: hint,
-          hintStyle: const TextStyle(color: Colors.grey),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(16),
-            borderSide: BorderSide(color: Colors.deepPurpleAccent),
+      child: Container(
+        padding: const EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(16), // Rounded box styling
+          border: Border.all(color: Colors.deepPurpleAccent), // Purple border
+        ),
+        child: TextField(
+          controller: controller,
+          maxLines: maxLines,
+          style: const TextStyle(color: Colors.black),
+          decoration: InputDecoration(
+            border: InputBorder.none, // Removes default underline
+            labelText: label,
+            hintText: hint,
+            labelStyle: const TextStyle(color: Colors.grey),
+            hintStyle: const TextStyle(color: Colors.grey),
+            floatingLabelBehavior: FloatingLabelBehavior.auto,
           ),
         ),
       ),
     );
+  }
 
-}
 }

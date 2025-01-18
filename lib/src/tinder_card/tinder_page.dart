@@ -27,7 +27,8 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
       begin: Offset.zero,
       end: Offset.zero
     ).animate(CurvedAnimation(
-        parent: _animationController, curve: Curves.easeOut)
+      parent: _animationController,
+      curve: Curves.easeOut)
     );
   }
 
@@ -95,14 +96,11 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
                       );
                     }
 
-                    return card;
-                  }
-                  ).toList().reversed.toList()
-              )
+                return card;
+              }).toList().reversed.toList(),
+            )
           );
-
-        },
-      ),
+        }),
       floatingActionButton: Padding(
         padding: EdgeInsets.fromLTRB(50.0, 0.0, 15.0, 40.0),
         child: SizedBox(
@@ -110,23 +108,23 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
           child: Row(
             children: [
               FloatingActionButton.large(
-                  shape: const CircleBorder(),
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.close, color: Colors.red),
-                  onPressed: (){
-                    print("Swiped Left");
-                    _swipeCard(false);
-                  }
+                shape: const CircleBorder(),
+                backgroundColor: Colors.white,
+                child: Icon(Icons.close, color: Colors.red),
+                onPressed: () {
+                  print("Swiped Left");
+                  _swipeCard(false);
+                }
               ),
               Spacer(),
               FloatingActionButton.large(
-                  shape: const CircleBorder(),
-                  backgroundColor: Colors.white,
-                  child: Icon(Icons.favorite, color: Colors.purple),
-                  onPressed: (){
-                    print("Swiped right");
-                    _swipeCard(true);
-                  }
+                shape: const CircleBorder(),
+                backgroundColor: Colors.white,
+                child: Icon(Icons.favorite, color: Colors.purple),
+                onPressed: () {
+                  print("Swiped right");
+                  _swipeCard(true);
+                }
               )
             ],
           ),
@@ -136,7 +134,7 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
   }
 
   Future<List<Map<String,dynamic>>> getCardStack() async {
-    
+
     // Map<String, dynamic> janedoe = {
     //   "name": "Jane Doe",
     //   "company": "YUZHANG INC",
