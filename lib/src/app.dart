@@ -1,3 +1,4 @@
+import 'package:devbuddy/src/tinder_card/tinder_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -56,7 +57,7 @@ class MyApp extends StatelessWidget {
           // Define a light and dark color theme. Then, read the user's
           // preferred ThemeMode (light, dark, or system default) from the
           // SettingsController to display the correct theme.
-          theme: ThemeData(),
+          theme: ThemeData.dark(),
           darkTheme: ThemeData.dark(),
           themeMode: settingsController.themeMode,
 
@@ -70,10 +71,10 @@ class MyApp extends StatelessWidget {
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);
                   case SampleItemDetailsView.routeName:
-                    return const SampleItemDetailsView();
+                    return TinderPageView();
                   case SampleItemListView.routeName:
                   default:
-                    return const SampleItemListView();
+                    return TinderPageView();
                 }
               },
             );
