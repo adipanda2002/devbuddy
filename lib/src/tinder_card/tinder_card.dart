@@ -2,7 +2,17 @@ import 'package:flutter/material.dart';
 import 'package:mongo_dart/mongo_dart.dart';
 
 class TinderCard extends StatelessWidget{
-  const TinderCard({super.key});
+  const TinderCard({
+    super.key,
+    this.name = "NULL",
+    this.company = "COMPANY",
+    this.projects = "PROJECTS",
+  });
+
+  //final Image image;
+  final String name;
+  final String company;
+  final String projects;
 
 
   @override

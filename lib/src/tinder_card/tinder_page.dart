@@ -8,11 +8,15 @@ class TinderPageView extends StatelessWidget {
   const TinderPageView({super.key});
 
 
+
   @override
   Widget build(BuildContext context) {
+    List<TinderCard> stack = getCardStack();
     return Scaffold(
       body: Container(
-        child: TinderCard()
+        child: Stack(
+          children: stack,
+        )
       ),
       floatingActionButton: Padding(
         padding: EdgeInsets.fromLTRB(50.0, 0.0, 15.0, 40.0),
@@ -38,5 +42,33 @@ class TinderPageView extends StatelessWidget {
         ),
       ),
     );
+  }
+
+  List<TinderCard> getCardStack() {
+    List<TinderCard> stack = [];
+
+    TinderCard janedoe = new TinderCard(
+      name:"Janice Manice",
+      company: "YASH INDUSTRIES",
+      projects: "MY PROJECT",
+    );
+
+    TinderCard janicemanice = new TinderCard(
+      name:"Janice Manice",
+      company: "YASH INDUSTRIES",
+      projects: "MY PROJECT",
+    );
+
+    TinderCard bobbobby = new TinderCard(
+      name:"Bob Bobby",
+      company: "Adi Tech",
+      projects: "Bobs PROJECTs",
+    );
+
+    stack.add(janedoe);
+    stack.add(janicemanice);
+    stack.add(bobbobby);
+
+    return stack;
   }
 }
