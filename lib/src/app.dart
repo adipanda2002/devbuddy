@@ -1,3 +1,4 @@
+import 'package:devbuddy/src/login_page/loginview.dart';
 import 'package:devbuddy/src/tinder_card/tinder_page.dart';
 import 'package:devbuddy/src/project_form/project_form_page.dart';
 import 'package:devbuddy/src/my_account/my_account_page.dart';
@@ -91,10 +92,10 @@ class MyApp extends StatelessWidget {
                   case SettingsView.routeName:
                     return SettingsView(controller: settingsController);
                   case SampleItemDetailsView.routeName:
-                    return TinderPageView();
+                    return LoginPageView();
                   case SampleItemListView.routeName:
                   default:
-                    return TinderPageView();
+                    return LoginPageView();
                 }
               },
             );
