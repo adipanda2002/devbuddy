@@ -5,12 +5,14 @@ class TinderCard extends StatelessWidget{
     super.key,
     this.name = "NULL",
     this.company = "COMPANY",
-    this.projects = "PROJECTS",
+    this.industry = "INDUSTRY",
+    this.projects = "PROJECTS"
   });
 
   //final Image image;
   final String name;
   final String company;
+  final String industry;
   final String projects;
 
 
@@ -40,6 +42,7 @@ class TinderCard extends StatelessWidget{
                         fontSize: 40.0
                     )),
                     Text(company, style: TextStyle(fontSize: 24.0),),
+                    Text(industry),
                     Text(projects)
                   ]
               ),

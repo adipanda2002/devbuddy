@@ -16,8 +16,6 @@ dependencies:
   flutter_localizations:
     sdk: flutter
 
-  mongo_dart: ^0.10.3
-
   crypto: ^3.0.1
   cupertino_icons: ^1.0.2
   liquid_swipe: ^3.0.0

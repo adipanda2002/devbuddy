@@ -1,15 +1,10 @@
 import 'package:devbuddy/src/login_page/loginview.dart';
-import 'package:devbuddy/src/tinder_card/tinder_page.dart';
-import 'package:devbuddy/src/project_form/project_form_page.dart';
-import 'package:devbuddy/src/my_account/my_account_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
 import 'settings/settings_controller.dart';
-import 'settings/settings_service.dart';
 import 'settings/settings_view.dart';
-import 'sample_feature/sample_item.dart';
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
 

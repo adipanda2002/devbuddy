@@ -11,7 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
 

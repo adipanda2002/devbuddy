@@ -5,6 +5,8 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FormPage extends StatefulWidget {
+  const FormPage({super.key});
+
   @override
   _FormPageState createState() => _FormPageState();
 }

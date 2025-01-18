@@ -1,7 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:google_sign_in/google_sign_in.dart';
-import 'package:devbuddy/main.dart';
-import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'package:devbuddy/src/tinder_card/tinder_page.dart';
 import 'package:devbuddy/src/project_form/project_form_page.dart';
