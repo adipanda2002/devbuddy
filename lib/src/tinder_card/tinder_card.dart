@@ -36,12 +36,12 @@ class TinderCard extends StatelessWidget{
                 spacing: 20.0,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text("Jane Doe", textAlign:TextAlign.left, style: const TextStyle(
+                    Text(name, textAlign:TextAlign.left, style: const TextStyle(
                         fontWeight: FontWeight.bold,
                         fontSize: 40.0
                     )),
-                    Text("Yuzhang INC", style: TextStyle(fontSize: 24.0),),
-                    Text("Projects: project 1, project 2")
+                    Text(company, style: TextStyle(fontSize: 24.0),),
+                    Text(projects)
                   ]
               ),
             )
