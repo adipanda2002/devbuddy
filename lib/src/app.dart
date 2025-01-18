@@ -6,10 +6,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 
+import 'settings/settings_controller.dart';
+import 'settings/settings_service.dart';
+import 'settings/settings_view.dart';
+import 'sample_feature/sample_item.dart';
 import 'sample_feature/sample_item_details_view.dart';
 import 'sample_feature/sample_item_list_view.dart';
-import 'settings/settings_controller.dart';
-import 'settings/settings_view.dart';
 
 /// The Widget that configures your application.
 class MyApp extends StatelessWidget {
@@ -60,29 +62,8 @@ class MyApp extends StatelessWidget {
           theme: ThemeData.dark(),
           darkTheme: ThemeData.dark(),
 
-          home: DefaultTabController(
-            length: 3,
-            child: Scaffold(
-              appBar: AppBar(
-                title:
-                    Text("DevBuddy"), //AppLocalizations.of(context)!.appTitle),
-                bottom: TabBar(
-                  tabs: [
-                    Tab(icon: Icon(Icons.home), text: 'Home'),
-                    Tab(icon: Icon(Icons.edit), text: 'Form'),
-                    Tab(icon: Icon(Icons.account_circle), text: 'Account'),
-                  ],
-                ),
-              ),
-              body: TabBarView(
-                children: [
-                  TinderPageView(),
-                  FormPage(),
-                  MyAccountPage(),
-                ],
-              ),
-            ),
-          ),
+          home: LoginPageView(),
+
 
           onGenerateRoute: (RouteSettings routeSettings) {
             return MaterialPageRoute<void>(

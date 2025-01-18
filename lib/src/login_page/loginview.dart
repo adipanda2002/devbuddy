@@ -1,9 +1,13 @@
 import 'package:flutter/material.dart';
 
+import 'package:devbuddy/src/tinder_card/tinder_page.dart';
+import 'package:devbuddy/src/project_form/project_form_page.dart';
+import 'package:devbuddy/src/my_account/my_account_page.dart';
+
 void main() => runApp(const App());
 
 class App extends StatelessWidget {
-  const App({Key? key}) : super(key:key);
+  const App({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +21,7 @@ class App extends StatelessWidget {
 
 
 class LoginPageView extends StatelessWidget {
-  const LoginPageView({Key? key}) : super(key: key);
+  const LoginPageView({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -28,7 +32,7 @@ class LoginPageView extends StatelessWidget {
         child: ListView(
           children: [
             const Image(image: AssetImage("assets/images/db.png"), height: 180,),
-            const Text("Find your match"),
+            // const Text("Find your match"),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 16),
               child: TextFormField(
@@ -48,10 +52,46 @@ class LoginPageView extends StatelessWidget {
               ),
             ),
             // ElevatedButton(onPressed: () {}, child: const Text("elevated Button")),
-            OutlinedButton(onPressed: () {}, child: const Text("Login"))
+            OutlinedButton(onPressed: () {}, child: const Text("Login")),
+            OutlinedButton(onPressed: (){
+              Navigator.pop(context);
+              Navigator.push(context, MaterialPageRoute(builder: (context) => DefaultTabController(
+                length: 3,
+                child: Scaffold(
+                  appBar: AppBar(
+                    title:
+                    Text("DevBuddy"), //AppLocalizations.of(context)!.appTitle),
+                    bottom: TabBar(
+                      tabs: [
+                        Tab(icon: Icon(Icons.home), text: 'Home'),
+                        Tab(icon: Icon(Icons.edit), text: 'Form'),
+                        Tab(icon: Icon(Icons.account_circle), text: 'Account'),
+                      ],
+                    ),
+                  ),
+                  body: TabBarView(
+                    children: [
+                      TinderPageView(),
+                      FormPage(),
+                      MyAccountPage(),
+
+                    ],
+                  ),
+                ),
+
+
+              )));
+              }, child: const Text("SKIP LOGIN")),
           ]
         ),
       ),
     );
   }
 }
+
+
+
+//
+// home: DefaultTabController(
+
+// ),
