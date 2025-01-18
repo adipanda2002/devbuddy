@@ -19,7 +19,7 @@ class TinderCard extends StatelessWidget{
     return Card.filled(
       margin: EdgeInsets.zero,
       color: Color(0xffffffff),
-      child: Container(
+      child: SizedBox(
         width: double.infinity,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
