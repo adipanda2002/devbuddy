@@ -23,7 +23,7 @@ dependencies:
   liquid_swipe: ^3.0.0
   smooth_page_indicator: ^1.0.0+2
   flutter_native_splash: ^2.4.4
-  #sqflite: ^2.4.1
+#  sqflite: ^2.4.1
 
   flutter_dotenv: ^5.0.2
 
