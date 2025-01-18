@@ -7,7 +7,7 @@ import 'src/settings/settings_service.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await MongoDatabase.connect();
+  // await MongoDatabase.connect();
 
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
