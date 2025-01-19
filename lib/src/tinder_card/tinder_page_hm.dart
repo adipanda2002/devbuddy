@@ -1,18 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:devbuddy/src/tinder_card/tinder_card.dart';
+import 'package:devbuddy/src/tinder_card/tinder_card_hm.dart';
 
-class TinderPageView extends StatefulWidget {
+class TinderPageView2 extends StatefulWidget {
 
   final String userId;
 
-  const TinderPageView({Key? key, required this.userId}) : super(key: key);
+  const TinderPageView2({Key? key, required this.userId}) : super(key: key);
 
   @override
-  State<TinderPageView> createState() => _TinderPageViewState();
+  State<TinderPageView2> createState() => _TinderPageViewState2();
 }
 
-class _TinderPageViewState extends State<TinderPageView> with SingleTickerProviderStateMixin {
+class _TinderPageViewState2 extends State<TinderPageView2> with SingleTickerProviderStateMixin {
   late AnimationController _animationController;
   late Animation<Offset> _animation;
   List<Map<String, dynamic>> stack = [];
@@ -33,14 +33,15 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
       parent: _animationController, 
       curve: Curves.easeOut)
     );
-    _fetchProjects();
+    _fetchStudents();
   }
 
-  Future<void> _fetchProjects() async {
+  Future<void> _fetchStudents() async {
   try {
     final response = await supabase
-        .from('projects')
-        .select('id, description, tech_stack, development_tags, company, website, industry')
+        .from('users')
+        .select('id, username, role, degree, university, skills, name')
+        .eq('role', 'student')
         .order('created_at', ascending: false)
         .limit(10);
 
@@ -49,14 +50,13 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
         stack = response.map((item) {
           return {
             "id": item["id"], // Include project ID
-            "description": item["description"] ?? "No description",
-            "tech_stack": item["tech_stack"] ?? "No tech stack",
-            "development_tags": item["development_tags"] != null
-                ? List<String>.from(item["development_tags"])
+            "username": item["username"] ?? "No username",
+            "degree": item["degree"] ?? "No degree",
+            "university": item["university"] ?? "No university",
+            "skills": item["skills"] != null
+                ? List<String>.from(item["skills"])
                 : [""],
-            "company": item["company"] ?? "No company",
-            "website": item["website"] ?? "No website",
-            "industry": item["industry"] ?? "No industry",
+            "name": item["name"] ?? "No name",
           };
         }).toList();
         isLoading = false;
@@ -68,7 +68,7 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
       });
     }
   } catch (error) {
-    print('Error fetching projects: $error');
+    print('Error fetching students: $error');
     setState(() {
       isLoading = false;
     });
@@ -79,9 +79,9 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
 
  void _swipeCard(bool isRightSwipe) {
   if (stack.isEmpty) return;
- // Assuming `id` is the project UUID
-  final hmId = stack.last['hiring_manager_id'];
-  final studentId = widget.userId;
+
+  final studentId = stack.last['id']; // Assuming `id` is the project UUID
+  final hmId = widget.userId;
 
   final endOffset = Offset(isRightSwipe ? 1.5 : -1.5, 0.0);
   setState(() {
@@ -95,7 +95,7 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
   });
 
   _animationController.forward(from: 0.0).then((_) {
-    _registerSwipe(studentId, hmId, isRightSwipe); // Register swipe
+    _registerSwipe(hmId, studentId, isRightSwipe); // Register swipe
     setState(() {
       stack.removeLast();
     });
@@ -123,7 +123,7 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
     if (stack.isEmpty) {
       return const Scaffold(
         body: Center(
-          child: Text('No more projects available'),
+          child: Text('No more students available'),
         ),
       );
     }
@@ -132,16 +132,16 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
       body: Container(
         child: Stack(
           clipBehavior: Clip.none,
-          children: stack.reversed.map((project) {
-            int index = stack.indexOf(project);
-            TinderCard card = TinderCard(
-              key: ValueKey(project),
-              description: project["description"] ?? 'No description',
-              tech_stack: project["tech_stack"] ?? 'No tech stack',
-              development_tags: project["development_tags"] ?? 'No tags',
-              company: project["company"] ?? "No company",
-              website: project["website"] ?? "No website",
-              industry: project["industry"] ?? "No industry",
+          children: stack.reversed.map((student) {
+            int index = stack.indexOf(student);
+            TinderCard2 card = TinderCard2(
+              key: ValueKey(student),
+              username: student["username"] ?? 'No username',
+              role: student["role"] ?? 'No role',
+              degree: student["degree"] ?? 'No degree',
+              university: student["university"] ?? 'No university',
+              skills: student["skills"] ?? 'No skills',
+              name: student["name"] ?? 'No name',
             );
 
             if (index == stack.length - 1) {
@@ -187,12 +187,12 @@ class _TinderPageViewState extends State<TinderPageView> with SingleTickerProvid
     );
   }
 
-  Future<void> _registerSwipe(String studentId, String hmId, bool isRightSwipe) async {
+  Future<void> _registerSwipe(String hmId, String studentId, bool isRightSwipe) async {
   if (!isRightSwipe) return; // Only register right swipes
   try {
     final response = await supabase.from('swipes').insert({
-      'swiper_id': studentId,
-      'swipee_id': hmId,
+      'swiper_id': hmId,
+      'swipee_id': studentId,
     });
   } catch (error) {
     print("Error registering swipe: $error");

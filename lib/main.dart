@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 import 'src/app.dart';
 import 'src/settings/settings_controller.dart';
@@ -12,7 +11,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  await dotenv.load(fileName: ".env");
+  await dotenv.load(fileName: "assets/.env");
   // Set up the SettingsController, which will glue user settings to multiple
   // Flutter Widgets.
 
