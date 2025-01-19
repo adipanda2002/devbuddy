@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 class FormPage extends StatefulWidget {
@@ -159,11 +160,21 @@ class _FormPageState extends State<FormPage>{
     try {
       final supabase = Supabase.instance.client;
 
+      final prefs = await SharedPreferences.getInstance();
+      final userId = prefs.getString('user_id');
+
+      if (userId == null) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('No user session found. Please log in.')),
+        );
+        return;
+      }
+
       final response = await supabase.from('projects').insert({
         'description': description,
         'tech_stack': techStack,
         'development_tags': tags,
-        'hiring_manager_id': null,
+        'hiring_manager_id': userId,
       });
 
       ScaffoldMessenger.of(context).showSnackBar(

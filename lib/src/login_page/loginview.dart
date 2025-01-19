@@ -1,3 +1,4 @@
+import 'package:devbuddy/src/project_form/student_form_page.dart';
 import 'package:flutter/material.dart';
 
 import 'package:devbuddy/src/tinder_card/tinder_page.dart';
@@ -170,7 +171,9 @@ class _LoginPageViewState extends State<LoginPageView> {
                 role == 'hm'
                     ? TinderPageView(userId: userId) // Home for hiring managers
                     : TinderPageView(userId: userId),      // Home for students
-                FormPage(),                              // Shared Form Page
+                role == 'hm'
+                    ? FormPage()
+                    : StudentFormPage(),
                 role == 'hm'
                     ? HiringManagerDashboard(userId: userId) // Dashboard for hiring managers
                     : StudentDashboard(userId: userId),      // Dashboard for students
