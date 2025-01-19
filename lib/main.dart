@@ -30,7 +30,7 @@ void main() async {
   await settingsController.loadSettings();
 
   // Check if a user session exists (via SharedPreferences or Supabase).
-  final userId = Supabase.instance.client.auth.currentSession?.user?.id;
+  final userId = Supabase.instance.client.auth.currentSession?.user.id;
   final initialRoute = userId == null ? 'login' : 'main';
 
   // Run the app, passing in the user ID

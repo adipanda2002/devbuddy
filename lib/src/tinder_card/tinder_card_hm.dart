@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 class TinderCard2 extends StatelessWidget {
   const TinderCard2({
     super.key,
-    this.username = "",
     this.role = "",
     this.degree = "",
     this.university = "",
@@ -11,7 +10,6 @@ class TinderCard2 extends StatelessWidget {
     this.name = "",
   });
 
-  final String username;
   final String role;
   final String degree;
   final String university;
@@ -32,7 +30,7 @@ class TinderCard2 extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // Username
+            // name
             Row(
               children: [
                 const Icon(Icons.person, color: Colors.deepPurpleAccent),

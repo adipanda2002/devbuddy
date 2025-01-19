@@ -1,4 +1,5 @@
 import 'package:devbuddy/src/project_form/student_form_page.dart';
+import 'package:devbuddy/src/tinder_card/tinder_page_hm.dart';
 import 'package:flutter/material.dart';
 
 import 'package:devbuddy/src/tinder_card/tinder_page.dart';
@@ -169,7 +170,7 @@ class _LoginPageViewState extends State<LoginPageView> {
             body: TabBarView(
               children: [
                 role == 'hm'
-                    ? TinderPageView(userId: userId) // Home for hiring managers
+                    ? TinderPageView2(userId: userId) // Home for hiring managers
                     : TinderPageView(userId: userId),      // Home for students
                 role == 'hm'
                     ? FormPage()

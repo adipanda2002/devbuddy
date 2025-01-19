@@ -40,7 +40,7 @@ class _TinderPageViewState2 extends State<TinderPageView2> with SingleTickerProv
   try {
     final response = await supabase
         .from('users')
-        .select('id, username, role, degree, university, skills, name')
+        .select('id, role, degree, university, skills, name')
         .eq('role', 'student')
         .order('created_at', ascending: false)
         .limit(10);
@@ -49,8 +49,7 @@ class _TinderPageViewState2 extends State<TinderPageView2> with SingleTickerProv
       setState(() {
         stack = response.map((item) {
           return {
-            "id": item["id"], // Include project ID
-            "username": item["username"] ?? "No username",
+            "id": item["id"], 
             "degree": item["degree"] ?? "No degree",
             "university": item["university"] ?? "No university",
             "skills": item["skills"] != null
@@ -136,7 +135,6 @@ class _TinderPageViewState2 extends State<TinderPageView2> with SingleTickerProv
             int index = stack.indexOf(student);
             TinderCard2 card = TinderCard2(
               key: ValueKey(student),
-              username: student["username"] ?? 'No username',
               role: student["role"] ?? 'No role',
               degree: student["degree"] ?? 'No degree',
               university: student["university"] ?? 'No university',
