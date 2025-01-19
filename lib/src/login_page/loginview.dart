@@ -5,6 +5,9 @@ import 'package:devbuddy/src/project_form/project_form_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../dashboards/hiringmanagerDashboard.dart';
+import '../dashboards/studentDashboard.dart';
+
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -63,7 +66,7 @@ class _LoginPageViewState extends State<LoginPageView> {
       // Check if the user exists
       final response = await supabase
           .from('users')
-          .select('id, username, password')
+          .select('id, username, password, role')
           .eq('username', username)
           .maybeSingle();
 
@@ -73,12 +76,15 @@ class _LoginPageViewState extends State<LoginPageView> {
         final newUser = await supabase.from('users').insert({
           'username': username,
           'password': password,
-        }).select('id').single();
-        await saveUserSession(newUser['id']);
+          'role': 'student',
+        }).select('id, role').single();
+        await saveUserSession(newUser['id'], newUser['role']);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text('New user created successfully!')),
         );
+
+        _navigateToDashboard(newUser['id'], newUser['role']);
       } else if (response['password'] != password) {
         // Password mismatch
         ScaffoldMessenger.of(context).showSnackBar(
@@ -86,12 +92,14 @@ class _LoginPageViewState extends State<LoginPageView> {
         );
         return;
       } else {
-        await saveUserSession(response['id']);
+        await saveUserSession(response['id'], response['role']);
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful!')),
-        );
+            const SnackBar(content: Text('Login successful!')));
+
+        _navigateToDashboard(response['id'], response['role']);
       }
 
+      /*
       final userId = response?['id'];
       print('User ID: $userId');
 
@@ -109,7 +117,6 @@ class _LoginPageViewState extends State<LoginPageView> {
                     tabs: [
                       Tab(icon: Icon(Icons.home), text: 'Home'),
                       Tab(icon: Icon(Icons.edit), text: 'Form'),
-                      Tab(icon: Icon(Icons.account_circle), text: 'Account'),
                     ],
                   ),
                 ),
@@ -123,6 +130,7 @@ class _LoginPageViewState extends State<LoginPageView> {
             ),
           ),
         );
+       */
     } catch (e) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Error: ${e.toString()}')),
@@ -134,10 +142,46 @@ class _LoginPageViewState extends State<LoginPageView> {
     }
   }
 
-  Future<void> saveUserSession(String userId) async {
+  Future<void> saveUserSession(String userId, String role) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('user_id', userId);
+    await prefs.setString('role', role);
   }
+
+  void _navigateToDashboard(String userId, String role) {
+    Navigator.pushReplacement(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DefaultTabController(
+          length: 3,
+          child: Scaffold(
+            appBar: AppBar(
+              title: const Text("DevBuddy"),
+              bottom: const TabBar(
+                tabs: [
+                  Tab(icon: Icon(Icons.home), text: 'Home'),
+                  Tab(icon: Icon(Icons.edit), text: 'Form'),
+                  Tab(icon: Icon(Icons.dashboard), text: 'Dashboard'),
+                ],
+              ),
+            ),
+            body: TabBarView(
+              children: [
+                role == 'hm'
+                    ? TinderPageView(userId: userId) // Home for hiring managers
+                    : TinderPageView(userId: userId),      // Home for students
+                FormPage(),                              // Shared Form Page
+                role == 'hm'
+                    ? HiringManagerDashboard(userId: userId) // Dashboard for hiring managers
+                    : StudentDashboard(userId: userId),      // Dashboard for students
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
 
   @override
   Widget build(BuildContext context) {
