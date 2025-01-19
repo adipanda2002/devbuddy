@@ -2,13 +2,11 @@ import 'package:devbuddy/src/login_page/loginview.dart';
 import 'package:devbuddy/src/tinder_card/tinder_page.dart';
 import 'package:devbuddy/src/project_form/project_form_page.dart';
 import 'package:devbuddy/src/tinder_card/tinder_page_hm.dart';
+import 'package:devbuddy/src/matches/matches.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import 'dashboards/hiringmanagerDashboard.dart';
-import 'dashboards/studentDashboard.dart';
 import 'settings/settings_controller.dart';
 
 /// The Widget that configures your application.
@@ -85,9 +83,27 @@ class MyApp extends StatelessWidget {
               home: userId != null
                   ? DefaultTabController(
                       length: 3,
-                      child: role == 'hm'
-                          ? HiringManagerDashboard(userId: userId)
-                          : StudentDashboard(userId: userId),
+                      child: Scaffold(
+                        appBar: AppBar(
+                          title: const Text("DevBuddy"),
+                          bottom: const TabBar(
+                            tabs: [
+                              Tab(icon: Icon(Icons.home), text: 'Home'),
+                              Tab(icon: Icon(Icons.edit), text: 'Form'),
+                              Tab(icon: Icon(Icons.dashboard), text: 'Matches'),
+                            ],
+                          ),
+                        ),
+                        body: TabBarView(
+                          children: [
+                            role == 'hm'
+                                ? TinderPageView2(userId: userId) // Home for hiring managers
+                                : TinderPageView(userId: userId), // Home for students
+                            FormPage(), // Shared Form Page
+                            MatchesPage(userId: userId),
+                          ],
+                        ),
+                      ),
                     )
                   : const LoginPageView(),
 
@@ -111,7 +127,7 @@ class MyApp extends StatelessWidget {
                                     Tab(icon: Icon(Icons.edit), text: 'Form'),
                                     Tab(
                                         icon: Icon(Icons.dashboard),
-                                        text: 'Dashboard'),
+                                        text: 'Matches'),
                                   ],
                                 ),
                               ),
@@ -124,13 +140,7 @@ class MyApp extends StatelessWidget {
                                       : TinderPageView(
                                           userId: userId), // Home for students
                                   FormPage(), // Shared Form Page
-                                  role == 'hm'
-                                      ? HiringManagerDashboard(
-                                          userId:
-                                              userId) // Dashboard for hiring managers
-                                      : StudentDashboard(
-                                          userId:
-                                              userId), // Dashboard for students
+                                  MatchesPage(userId: userId),
                                 ],
                               ),
                             ),

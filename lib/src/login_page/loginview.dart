@@ -1,3 +1,4 @@
+import 'package:devbuddy/src/matches/matches.dart';
 import 'package:devbuddy/src/project_form/student_form_page.dart';
 import 'package:devbuddy/src/tinder_card/tinder_page_hm.dart';
 import 'package:flutter/material.dart';
@@ -6,9 +7,6 @@ import 'package:devbuddy/src/tinder_card/tinder_page.dart';
 import 'package:devbuddy/src/project_form/project_form_page.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
-import '../dashboards/hiringmanagerDashboard.dart';
-import '../dashboards/studentDashboard.dart';
 
 
 void main() async {
@@ -163,7 +161,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                 tabs: [
                   Tab(icon: Icon(Icons.home), text: 'Home'),
                   Tab(icon: Icon(Icons.edit), text: 'Form'),
-                  Tab(icon: Icon(Icons.dashboard), text: 'Dashboard'),
+                  Tab(icon: Icon(Icons.dashboard), text: 'Matches'),
                 ],
               ),
             ),
@@ -175,9 +173,7 @@ class _LoginPageViewState extends State<LoginPageView> {
                 role == 'hm'
                     ? FormPage()
                     : StudentFormPage(),
-                role == 'hm'
-                    ? HiringManagerDashboard(userId: userId) // Dashboard for hiring managers
-                    : StudentDashboard(userId: userId),      // Dashboard for students
+                MatchesPage(userId: userId),
               ],
             ),
           ),
