@@ -27,8 +27,8 @@ class TinderCard extends StatelessWidget {
       ),
       elevation: 8,
       color: const Color(0xff1e1e1e), // Dark background color
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
+      child: ListView(
+        padding: EdgeInsets.zero, // Remove extra padding
         children: [
           // Image section with rounded corners
           ClipRRect(
